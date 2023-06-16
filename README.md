@@ -1,6 +1,6 @@
 # **Airbus Capstone Project**
 
-This project works with Airbus flight and fuel/engine system data for in-depth analysis and pattern detection. The aim is to impute missing data, detect outliers, and perform feature extraction for efficient data analysis.
+This project works with Airbus flight and fuel/engine system data for comprehensive analysis and pattern detection. The aim is to manage missing data, detect outliers, and conduct Principal Component Analysis (PCA) and clustering for efficient data analysis and feature extraction.
 
 ## **Data Overview**
 
