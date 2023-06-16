@@ -1,6 +1,6 @@
 # **Airbus Capstone Project**
 
-This project works with Airbus flight and fuel/engine system data for comprehensive analysis and pattern detection. The aim is to manage missing data, detect outliers, and conduct Principal Component Analysis (PCA) and clustering for efficient data analysis and feature extraction.
+This project works with Airbus flight and fuel/engine system data for comprehensive analysis and fuel leakage detection. The aim is to manage missing data, detect outliers, and conduct Principal Component Analysis (PCA) and clustering for efficient data analysis and feature extraction.
 
 ## **Data Overview**
 
@@ -57,13 +57,15 @@ Each file corresponds to a different plane.
 
 ## **Project Objective**
 
-- **Data Imputation:** Compute averages to fill in missing data.
+- **Data Imputation:** Fill missing data by interpolating and drop the data where imputation is not possible.
 
 - **Outlier Detection:** Conduct anomaly detection to identify outliers in the dataset. This step will ensure the robustness of the following analytical steps.
 
+- **Feature Engineering:** This process is aimed at creating new variables or transforming existing ones to better represent the underlying data patterns and structures. By creating meaningful derived features or transforming existing ones appropriately, we can significantly improve the interpretability and results of our analysis. We will follow careful feature selection to keep only the most relevant features in our models.
+
 - **Dimensionality Reduction and Feature Extraction:** We plan to use PCA to manage the large number of variables in the dataset. PCA will help us to extract the most meaningful features and reduce the complexity of the dataset, thereby enhancing the computational efficiency of subsequent algorithms. The reconstruction error after PCA will be a valuable indicator of the quality of the dimensionality reduction process.
 
-- **Clustering:** Post PCA, we plan to apply various clustering algorithms on the transformed data to find patterns and groupings. The objective is to identify any inherent groupings and segmentations in the data that could provide valuable insights about different flight and fuel conditions.
+- **Clustering:** Post PCA, we plan to apply various clustering algorithms on the transformed data to find patterns and groupings. The objective is to identify any inherent groupings and segmentations in the data that could provide valuable insights about different flight and fuel leakage.
 
 We will be comparing the performances of different clustering algorithms and their applicability to our data.
 
