@@ -1,40 +1,46 @@
-# Airbus Capstone Project
+# **Airbus Capstone Project**
 
-## The data consisted of the following (including the column KEY in the dataset)
+This project works with Airbus flight and fuel/engine system data for in-depth analysis and pattern detection. The aim is to impute missing data, detect outliers, and perform feature extraction for efficient data analysis.
 
-### A/C and flight data:
+## **Data Overview**
 
-- Time, day, month, year → ONLY MSN 02
-- UTC date/time → UTC_TIME
-- MSN (A/C Name) → ​​MSN
-- Flight number → Flight
-- Flight phase\* → FLIGHT_PHASE_COUNT
-- Altitude → FW_GEO_ALTITUDE
-- Pitch and roll → ONLY MSN 02
+Data is available for various flight and fuel/engine system parameters. Here are the details:
 
-### Fuel/Engine system data:
+### **A/C and Flight Data**
 
-- Engine status (Running or not). → ONLY MSN 02
-- Fuel flow (to each engine) → ONLY MSN 022
-- Fuel used (by engines; Kg):
-  - FUEL_USED_1 → (Engine 1)
-  - FUEL_USED_2 → (Engine 2)
-  - FUEL_USED_3 → (Engine 3)
-  - FUEL_USED_4 → (Engine 4)
-- Fuel on board (“FOB” ; Kg) → VALUE_FOB
+- Time, day, month, year (exclusive to MSN 02)
+- UTC date/time (**`UTC_TIME`**)
+- MSN (A/C Name) (**`MSN`**)
+- Flight number (**`Flight`**)
+- Flight phase\* (**`FLIGHT_PHASE_COUNT`**)
+- Altitude (**`FW_GEO_ALTITUDE`**)
+- Pitch and roll (exclusive to MSN 02)
+
+### **Fuel/Engine System Data**
+
+- Engine status (Running or not) - exclusive to MSN 02
+- Fuel flow to each engine - exclusive to MSN 022
+- Fuel used by engines (Kg):
+  - **`FUEL_USED_1`** (Engine 1)
+  - **`FUEL_USED_2`** (Engine 2)
+  - **`FUEL_USED_3`** (Engine 3)
+  - **`FUEL_USED_4`** (Engine 4)
+- Fuel on board (FOB; Kg) (**`VALUE_FOB`**)
 - Fuel quantity per collector cell and surge tank volume (Kg):
-  - VALUE_FUEL_QTY_CT → Centra Tank
-  - VALUE_FUEL_QTY_FT1 → Feed Tank 1 (Engine 1)
-  - VALUE_FUEL_QTY_FT2 → Feed Tank 2 (Engine 2)
-  - VALUE_FUEL_QTY_FT3 → Feed Tank 3 (Engine 3)
-  - VALUE_FUEL_QTY_FT4 → Feed Tank 4 (Engine 4)
-  - VALUE_FUEL_QTY_LXT → Transfer Tank Left
-  - VALUE_FUEL_QTY_RXT → Transfer Tank Right
-- Pump status (On/Off, normally/abnormally, immersed/not immersed). → ONLY MSN 02
-- Leak detection and leak flow. → ONLY MSN 02
-- Fuel transfer mode. → ONLY MSN 02
+  - **`VALUE_FUEL_QTY_CT`** (Centra Tank)
+  - **`VALUE_FUEL_QTY_FT1`** (Feed Tank 1 - Engine 1)
+  - **`VALUE_FUEL_QTY_FT2`** (Feed Tank 2 - Engine 2)
+  - **`VALUE_FUEL_QTY_FT3`** (Feed Tank 3 - Engine 3)
+  - **`VALUE_FUEL_QTY_FT4`** (Feed Tank 4 - Engine 4)
+  - **`VALUE_FUEL_QTY_LXT`** (Transfer Tank Left)
+  - **`VALUE_FUEL_QTY_RXT`** (Transfer Tank Right)
+- Pump status (On/Off, normally/abnormally, immersed/not immersed) - exclusive to MSN 02
+- Leak detection and leak flow - exclusive to MSN 02
+- Fuel transfer mode - exclusive to MSN 02
 
-### (Flight Phases):
+Each file corresponds to a different plane.
+
+### **Flight Phases**
 
 1. Pre-flight
 2. Engine Run
@@ -49,12 +55,18 @@
 11. Landing
 12. Post-flight
 
-Each file is a different plane.
+## **Project Objective**
 
-Impute average in missing data.
+- **Data Imputation:** Compute averages to fill in missing data.
+- **Outlier Detection:** Conduct anomaly detection to identify outliers in the dataset.
+- **Dimensionality Reduction:** Utilize techniques like Principal Component Analysis (PCA) to reduce the number of variables and to find the reconstruction error.
 
-Outlier detection searching for anomaly
+Stay tuned for updates as the project progresses.
 
-Too many variable
+## **Project Contributors**
 
-Reconstruction error PCA
+- Federico Canadas
+- Scott Liechtenstein
+- Giacomo Tirelli
+- Niels van Meijel
+- Moritz Zoepffel
