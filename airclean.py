@@ -66,15 +66,17 @@ def create_leak(dataset, leak_flow, start_index=None, end_index=None):
     increment = 0
 
     # new column label with value 0
-    dataset_tmp["label"] = False
+    dataset_tmp["label"] = 0
 
     print(start_index)
 
-    for index in dataset_tmp[1300:].index:
+    for index in dataset_tmp[dataset_tmp.shape[0] // 2 :].index:
         dataset_tmp.at[index, "VALUE_FOB"] -= leak_flow + increment
         dataset_tmp.at[index, fuel_tank] -= leak_flow + increment
-        dataset_tmp.at[index, "label"] = True
+        dataset_tmp.at[index, "label"] = 1
         increment += leak_flow
+
+    dataset_tmp.to_csv("airclean_data/leak_dataset.csv", index=False)
 
     # set negative values in value_fob to 0
     dataset_tmp["VALUE_FOB"] = dataset_tmp["VALUE_FOB"].clip(lower=0)
@@ -289,7 +291,7 @@ def clean_dataset(dataset):
 if __name__ == "__main__":
     # load model
     model = tf.keras.models.load_model("model/my_model")
-    dataset = pd.read_csv("data/msn_14_fuel_leak_signals_preprocessed.csv", sep=";")
+    dataset = pd.read_csv("data/msn_37_fuel_leak_signals_preprocessed.csv", sep=";")
 
     # data cleaning
     dataset = clean_dataset(dataset)
@@ -300,9 +302,15 @@ if __name__ == "__main__":
     # predict labels
     predict_values = predict_values(model, dataset_autoencoder)
 
-    pd.concat([dataset, pd.DataFrame(predict_values)], axis=1).dropna().to_csv(
-        "test.csv", sep=";"
+    dataset.to_csv("airclean_data/dataset_without_preds.csv", sep=";")
+
+    dataset_concat = (
+        pd.concat([dataset, pd.DataFrame(predict_values)], axis=1)
+        .dropna()
+        .reset_index(drop=True)
     )
+
+    dataset_concat.to_csv("airclean_data/dataset_with_preds.csv", sep=";")
 
     print(dataset.shape)
     print(dataset_autoencoder.shape)
