@@ -1,0 +1,11 @@
+
+
+[theme]
+page_title = "Maintenance Dashboard"
+page_icon = "✈️"
+layout = "wide"
+primaryColor="#F63366"
+backgroundColor="#00205b"
+secondaryBackgroundColor="#F0F2F6"
+textColor="#FFFFFF"
+font="sans serif"
