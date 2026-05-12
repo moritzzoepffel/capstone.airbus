@@ -143,6 +143,36 @@ def apply_outlier_capping(dataset, bounds):
     return dataset_tmp
 
 
+def prepare_classifier_dataset(dataset):
+    """Prepares feature matrix X and label vector y for sklearn classifiers."""
+    feature_cols = [
+        "VALUE_FOB",
+        "TOTAL_FUEL_USED",
+        "VALUE_FOB_DIFF",
+        "TOTAL_FOB_BY_QTY",
+        "DELTA_VFOB_VS_VFOBQTY",
+        "ALTITUDE_DIFF",
+        "VALUE_FOB_MISSING",
+        "VALUE_FOB_MISSING_BY_QTY",
+        "VALUE_FOB_BY_FUEL_USED",
+    ]
+    X = dataset[feature_cols].fillna(0).values
+    y = dataset["label"].astype(int).values
+    return X, y
+
+
+def train_classifier(X_train, y_train, n_estimators=100, random_state=42):
+    """Trains a Random Forest classifier on labeled training data."""
+    from sklearn.ensemble import RandomForestClassifier
+    clf = RandomForestClassifier(
+        n_estimators=n_estimators,
+        random_state=random_state,
+        n_jobs=-1,
+    )
+    clf.fit(X_train, y_train)
+    return clf
+
+
 def add_features(dataset):
     """Adds TOTAL_FUEL_USED and TOTAL_FOB_BY_QTY aggregation columns."""
     dataset["TOTAL_FUEL_USED"] = (
@@ -240,7 +270,6 @@ if __name__ == "__main__":
     random.seed(42)
 
     # 1. Load
-    model = tf.keras.models.load_model("model/my_model")
     dataset = pd.read_csv("data/msn_14_fuel_leak_signals_preprocessed.csv", sep=";")
 
     # 2. Flight segmentation & leak injection (before split)
@@ -261,34 +290,37 @@ if __name__ == "__main__":
     train_df = apply_outlier_capping(train_df, bounds)
     test_df = apply_outlier_capping(test_df, bounds)
 
-    # 6. Autoencoder dataset: normalization fitted on train, reused for test
-    train_dataset, train_data, train_labels, min_val, max_val = autoencoder_dataset(train_df)
-    test_dataset, test_data, test_labels, _, _ = autoencoder_dataset(test_df, min_val, max_val)
+    # 6. Feature matrix and labels
+    X_train, y_train = prepare_classifier_dataset(train_df)
+    X_test,  y_test  = prepare_classifier_dataset(test_df)
 
-    # 7. Threshold computed from normal training samples only (no leakage)
-    normal_train_data = train_data[train_labels == 0]
-    threshold = compute_threshold(model, normal_train_data)
-    print(f"Anomaly threshold (from train): {threshold:.6f}")
+    # 7. Train Random Forest on labeled training data
+    clf = train_classifier(X_train, y_train)
 
     # 8. Predictions on held-out test data
-    predictions = predict_anomalies(model, test_data, threshold)
+    y_pred = clf.predict(X_test)
 
     # 9. Evaluation with full metrics
     from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score
 
-    y_true = (test_labels == 1).astype(int)   # 1 = leak
-    y_pred = (~predictions[0]).astype(int)     # False = anomaly → predicted leak
-
     print("\n=== Confusion Matrix ===")
-    print(confusion_matrix(y_true, y_pred))
+    print(confusion_matrix(y_test, y_pred))
     print("\n=== Classification Report ===")
-    print(classification_report(y_true, y_pred, target_names=["Normal", "Leak"]))
-    print(f"\nROC-AUC: {roc_auc_score(y_true, y_pred):.4f}")
+    print(classification_report(y_test, y_pred, target_names=["Normal", "Leak"]))
+    print(f"\nROC-AUC: {roc_auc_score(y_test, y_pred):.4f}")
 
-    # 10. Save results
-    result = pd.concat(
-        [test_dataset.reset_index(drop=True), predictions.rename(columns={0: "pred"})],
-        axis=1,
-    ).dropna()
+    # 10. Feature importance
+    feature_cols = [
+        "VALUE_FOB", "TOTAL_FUEL_USED", "VALUE_FOB_DIFF", "TOTAL_FOB_BY_QTY",
+        "DELTA_VFOB_VS_VFOBQTY", "ALTITUDE_DIFF", "VALUE_FOB_MISSING",
+        "VALUE_FOB_MISSING_BY_QTY", "VALUE_FOB_BY_FUEL_USED",
+    ]
+    importance = pd.Series(clf.feature_importances_, index=feature_cols).sort_values(ascending=False)
+    print("\n=== Feature Importance ===")
+    print(importance.to_string())
+
+    # 11. Save results
+    result = test_df.copy()
+    result["pred"] = y_pred
     result.to_csv("test.csv", sep=";")
     print(f"\nSaved {len(result)} rows to test.csv")
